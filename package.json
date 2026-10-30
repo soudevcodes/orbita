@@ -1,0 +1,18 @@
+{
+  "name": "orbita",
+  "private": true,
+  "description": "Código do squad Cartão da Órbita — empresa fictícia do ViraDev.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "bin": {
+    "orbita": "ferramentas/orbita.mjs"
+  },
+  "scripts": {
+    "setup": "node ferramentas/orbita.mjs setup",
+    "api": "node --experimental-strip-types --no-warnings api-conta/src/servidor.ts",
+    "motor": "cd motor-credito && python3 -m motor_credito",
+    "test": "node --test --no-warnings testes/*.test.mjs"
+  }
+}

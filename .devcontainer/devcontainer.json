@@ -1,0 +1,7 @@
+{
+  "name": "Órbita — squad Cartão",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "features": { "ghcr.io/devcontainers/features/python:1": { "version": "3.12" } },
+  "forwardPorts": [3333, 3334],
+  "postCreateCommand": "echo 'Ambiente pronto. Conecte sua conta: npx orbita login <código>'"
+}

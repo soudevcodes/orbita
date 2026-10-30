@@ -1,0 +1,4 @@
+node_modules
+orbita.db
+.orbita-estado.json
+__pycache__
