@@ -24,6 +24,8 @@ npx orbita doctor
 
 Tudo verde? Entregue o seu primeiro ticket: `npx orbita entregar T-001`.
 
+A partir da semana 3 você também vai precisar do **motor de crédito** (Python), num terceiro terminal: `npm run motor` (porta 3334).
+
 ## O que tem aqui
 
 | Pasta | O que é |
@@ -32,6 +34,7 @@ Tudo verde? Entregue o seu primeiro ticket: `npx orbita entregar T-001`.
 | `api-conta/` | API de contas, extrato, Pix e cartão (Node.js + TypeScript) — `npm run api` |
 | `motor-credito/` | Regras do Primeiro Cartão (Python) — `npm run motor` |
 | `dados/` | Consultas SQL do Risco — `npx orbita sql <arquivo>` |
+| `revisoes/` | PRs de colegas esperando a sua revisão |
 | `ferramentas/` | A CLI `orbita` e o gerador de dados |
 
 ## Como você entrega

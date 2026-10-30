@@ -27,16 +27,19 @@ O que o cliente vê no celular (e no `app-web`):
 
 ### Quem pode ter
 O cliente precisa, ao mesmo tempo:
-1. ter **18 anos ou mais**;
-2. ter conta na Órbita há **pelo menos 180 dias**;
+1. ter **18 anos ou mais** (quem faz 18 hoje já pode);
+2. ter conta na Órbita há **pelo menos 180 dias** corridos (aberta há exatamente 180 dias já pode);
 3. ter recebido **entradas de pelo menos R$ 300,00 em pelo menos 4 dos últimos 6 meses** (mês fechado, calendário).
 
-### Limite inicial
-- **30% da média mensal de entradas dos últimos 6 meses** (meses sem entrada contam como zero na média).
-- Arredondado **para baixo** até um múltiplo de **R$ 50,00**.
-- Mínimo **R$ 100,00**, máximo **R$ 1.500,00**.
+"Os últimos 6 meses" são os 6 meses de calendário **antes** do mês de hoje, no fuso de São Paulo: em 30/10/2026, de abril a setembro. O mês corrente ainda não fechou e não conta. Entradas são as transações `pix_entrada`.
 
-> Exemplo: entradas de R$ 2.000, 2.000, 1.800, 0, 2.200 e 2.000 → média R$ 1.666,66 → 30% = R$ 499,99 → arredondado para baixo: **R$ 450,00**.
+### Limite inicial
+- **30% da média mensal de entradas dos mesmos 6 meses fechados** — meses sem entrada contam como zero: a média é sempre a soma **dividida por 6**.
+- Cada passo é feito em centavos inteiros, **sempre arredondando para baixo** ([ADR-001](07-decisoes.md#adr-001)): primeiro a média, depois os 30%, depois o múltiplo de **R$ 50,00**.
+- Mínimo **R$ 100,00**, máximo **R$ 1.500,00**.
+- Cliente que não pode ter o cartão **não tem limite** (nem oferta).
+
+> Exemplo (a Priscila): entradas de R$ 2.000, 2.000, 1.800, 0, 2.200 e 2.000 → soma R$ 10.000,00 → média R$ 1.666,66 → 30% = R$ 499,99 → múltiplo de R$ 50 para baixo: **R$ 450,00**.
 
 ### Fatura
 - O cliente escolhe o **dia de fechamento**: 1, 10 ou 20.

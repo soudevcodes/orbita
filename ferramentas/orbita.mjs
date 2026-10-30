@@ -12,13 +12,15 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { BASES_PADRAO, executarChamada } from "./chamadas.mjs";
 
 const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const BANCO = path.join(RAIZ, "orbita.db");
 const ESTADO = path.join(RAIZ, ".orbita-estado.json");
 const CONFIG = path.join(os.homedir(), ".orbita", "config.json");
 const API = process.env.ORBITA_API ?? "https://evqfljudxatvhyxfiood.supabase.co/functions/v1/orbita";
-const API_LOCAL = process.env.ORBITA_API_LOCAL ?? "http://localhost:3333";
+const API_LOCAL = BASES_PADRAO.api;
+const MOTOR_LOCAL = BASES_PADRAO.motor;
 
 const verde = (s) => `\x1b[32m${s}\x1b[0m`;
 const vermelho = (s) => `\x1b[31m${s}\x1b[0m`;
@@ -137,6 +139,14 @@ async function diagnostico() {
 async function doctor() {
   const d = await diagnostico();
   for (const i of d.itens) console.log(`${i.ok ? verde("✔") : vermelho("✘")} ${i.detalhe}`);
+  // O motor-credito só entra no trabalho na semana 3: aparece aqui, mas não reprova o ambiente.
+  let motor = false;
+  try {
+    motor = (await fetch(`${MOTOR_LOCAL}/saude`, { signal: AbortSignal.timeout(2000) })).ok;
+  } catch {
+    /* fora do ar */
+  }
+  console.log(cinza(`${motor ? "✔" : "·"} motor-credito ${motor ? `respondendo em ${MOTOR_LOCAL}` : `fora do ar em ${MOTOR_LOCAL} (só precisa a partir do T-010: npm run motor)`}`));
   const tudo = d.itens.every((i) => i.ok);
   console.log(tudo ? verde("\nAmbiente pronto. Entregue o T-001 com: npx orbita entregar T-001") : "\nCorrija os itens marcados com ✘ e rode de novo.");
   return d;
@@ -181,19 +191,8 @@ async function entregar(a) {
     const d = await diagnostico();
     respostas.push({ tipo: "diagnostico", itens: d.itens, impressao: d.impressao, semente: d.semente });
   }
-  for (const c of inicio.chamadas ?? []) {
-    try {
-      const r = await fetch(`${API_LOCAL}${c.caminho}`, {
-        method: c.metodo,
-        headers: c.corpo ? { "Content-Type": "application/json" } : undefined,
-        body: c.corpo ? JSON.stringify(c.corpo) : undefined,
-        signal: AbortSignal.timeout(5000),
-      });
-      respostas.push({ tipo: "http", status: r.status, corpo: await r.json().catch(() => null) });
-    } catch (e) {
-      respostas.push({ tipo: "http", status: 0, erro: String(e?.message ?? e) });
-    }
-  }
+  // Uma de cada vez, na ordem: algumas conferências dependem da ordem (saldo antes e depois).
+  for (const c of inicio.chamadas ?? []) respostas.push(await executarChamada(c));
 
   const v = await chamarServidor("entrega_concluir", { entrega_id: inicio.entrega_id, respostas });
   console.log(v.aprovado ? verde(`\n✔ ${v.mensagem}`) : vermelho(`\n✘ ${v.mensagem}`));
