@@ -74,10 +74,13 @@ O cliente precisa, ao mesmo tempo:
 
 ## Antifraude (primeira versão)
 
-Uma compra no crédito fica **retida para confirmação no app** quando:
-- é maior que **3 vezes o valor médio** das compras do cliente nos últimos 90 dias **e** é numa categoria em que ele nunca comprou; ou
-- acontece em uma cidade a mais de 500 km da compra anterior, **menos de 2 horas** depois dela.
+**Compras** do cliente são as transações `debito` e `credito` (as que têm categoria e cidade). Uma compra nova no crédito fica **retida para confirmação no app** quando:
 
-Cliente com menos de 5 compras no histórico nunca é retido pela primeira regra (não há média confiável).
+1. **Valor alto em categoria nova:** é **maior que 3 vezes o valor médio** das compras do cliente **nos últimos 90 dias** **e** é numa categoria em que ele **nunca** comprou (em todo o histórico). Exatamente 3 vezes não retém.
+2. **Cidade distante:** acontece numa cidade a **mais de 500 km** da cidade da compra anterior, **menos de 2 horas** depois dela. A distância é em linha reta, entre as coordenadas de `api-conta/src/cidades.ts`. **Sem compra anterior, não há com o que comparar: essa regra não retém.**
+
+Cliente com **menos de 5 compras nos últimos 90 dias** nunca é retido pela regra 1 (não há média confiável).
+
+"Os últimos 90 dias" são as 90 × 24 horas antes do instante da compra. Uma compra retida não é um cartão bloqueado: o cliente confirma no app que foi ele e a compra segue.
 
 Próximo: [a arquitetura](04-arquitetura.md).

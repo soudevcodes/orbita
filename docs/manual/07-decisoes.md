@@ -17,8 +17,9 @@ Cada decisão importante fica registrada aqui com o porquê. Quando alguém perg
 - **Por quê:** às 22h de São Paulo já é o dia seguinte em UTC. Sem isso, a compra das 22h aparece "amanhã" no extrato.
 
 ## ADR-004 — Dado pessoal não vai para log {#adr-004}
-- **Decisão:** CPF, nome completo, renda e endereço nunca aparecem inteiros em log, mensagem de erro ou ferramenta de monitoramento. CPF aparece mascarado: `***.456.789-**`.
+- **Decisão:** CPF, nome completo, renda e endereço nunca aparecem inteiros em log, mensagem de erro ou ferramenta de monitoramento. CPF aparece mascarado: `***.456.789-**` (só os 6 dígitos do meio, com a pontuação).
 - **Por quê:** LGPD. Log é lido por muita gente e guardado por muito tempo.
+- **Na prática:** para rastrear um caso, o log leva o `cliente_id` e o CPF mascarado — o Suporte acha o cliente com isso, e quem lê o log não fica sabendo quem é.
 
 ## ADR-005 — O motor de crédito não acessa o banco {#adr-005}
 - **Decisão:** o `motor-credito` recebe tudo o que precisa na requisição (idade, data de abertura da conta, entradas por mês) e devolve a decisão. Ele não consulta o banco.

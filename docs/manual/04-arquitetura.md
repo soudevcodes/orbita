@@ -53,6 +53,14 @@ Em produção o banco é Postgres e cada serviço roda separado. **No seu comput
 - `motivos` lista **todas** as regras de "Quem pode ter" que o cliente não cumpre: `"idade"`, `"conta_recente"`, `"entradas"`. Elegível = lista vazia.
 - `limite_centavos` é o limite inicial quando elegível, e `null` quando não.
 
+### O antifraude da `api-conta`
+
+`POST /compra/avaliar` recebe `{ "cliente_id": 17, "valor_centavos": 45000, "categoria": "eletronicos", "cidade": "Recife", "quando": "2026-10-31T15:00:00Z" }` (`quando` em UTC) e responde `{ "retida": true, "motivos": ["valor_alto_categoria_nova"] }`. Os motivos possíveis são `"valor_alto_categoria_nova"` e `"cidade_distante"` (regras 1 e 2 do [antifraude](03-produto.md#antifraude-primeira-versão)); compra aprovada vem com a lista vazia.
+
+### Logs
+
+A `api-conta` escreve os logs no terminal e guarda as últimas 200 linhas em memória. `GET /logs?ultimas=50` devolve `{ "linhas": [...] }` — é o que a ferramenta de monitoramento lê em produção (e o que a auditoria pede para ver). Log é lido por muita gente: vale o [ADR-004](07-decisoes.md#adr-004). Reiniciou a `api-conta`, as linhas antigas somem.
+
 ## Os dados de exemplo
 
 O `orbita.db` vem com clientes inventados: a Dona Cida (diarista, recebe todo dia 5), o Wesley (motoboy, renda variável), a Priscila (estudante, recebe mesada), e outros. Eles aparecem nos tickets — reconhecê-los ajuda a pensar no cliente, não só na tabela.

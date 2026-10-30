@@ -55,6 +55,8 @@ test("rotas da temporada existem", async () => {
     ["GET", "/fatura/vencimento?fechamento=2026-11-10"],
     ["GET", "/fatura/minimo?total_centavos=5000"],
     ["GET", "/clientes/3/oferta"],
+    ["POST", "/compra/avaliar", { cliente_id: 1, valor_centavos: 1000, categoria: "mercado", cidade: "São Paulo", quando: "2026-10-31T15:00:00Z" }],
+    ["GET", "/logs?ultimas=5"],
   ];
   for (const [metodo, caminho, corpo] of rotas) {
     const r = await pedir(API, metodo, caminho, corpo);
