@@ -50,6 +50,10 @@ O squad tem plantão em revezamento. Quando algo quebra em produção:
 
 Num incidente: **primeiro estanca, depois entende, depois conserta de vez.** E depois de todo SEV1 ou SEV2 tem **postmortem** — sem culpados, com o que vamos mudar para não acontecer de novo.
 
+**Atualização de incidente** (no canal e para o Suporte), a cada hora enquanto durar: o que o cliente não consegue fazer e quantos são afetados; o que já sabemos e o que estamos fazendo; o que o Suporte responde ao cliente agora; quando sai a próxima atualização. Sem nome de quem errou, sem dado de cliente, sem jargão que o Suporte não consiga repassar.
+
+**Postmortem** (a Helena lê todos): o que aconteceu e o impacto (quem, quanto tempo); a linha do tempo curta; a causa — no sistema, não em pessoas ("a tela fazia uma consulta por transação", nunca "fulano esqueceu"); o que estancou e o que corrigiu; e as ações para não repetir, cada uma com responsável. Sem culpados: se uma pessoa conseguiu errar, o processo deixou.
+
 ## Como falar com as pessoas
 
 - **Atraso:** avise assim que souber, com nova data e motivo. "Vai atrasar um dia porque achei um caso que o critério não cobre — já falei com o Diego" é uma ótima mensagem.

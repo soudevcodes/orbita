@@ -1,5 +1,7 @@
 // Mini roteador HTTP: o bastante para a API do squad, sem framework.
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { comContagem } from "./banco.ts";
+import { registrar } from "./log.ts";
 
 export type Requisicao = {
   metodo: string;
@@ -36,6 +38,9 @@ async function lerCorpo(req: IncomingMessage): Promise<unknown> {
   }
 }
 
+/** A última requisição atendida (menos /saude) e quantas consultas ao banco ela fez. */
+export let ultimaRequisicao: { caminho: string; consultas: number } | null = null;
+
 export async function atender(req: IncomingMessage, res: ServerResponse) {
   const url = new URL(req.url ?? "/", "http://localhost");
   const metodo = req.method ?? "GET";
@@ -45,12 +50,16 @@ export async function atender(req: IncomingMessage, res: ServerResponse) {
     const m = url.pathname.match(r.padrao);
     if (!m) continue;
     const params = Object.fromEntries(r.nomes.map((n, i) => [n, decodeURIComponent(m[i + 1])]));
+    const contagem = { consultas: 0 };
     try {
-      resposta = await r.fn({ metodo, caminho: url.pathname, params, query: url.searchParams, corpo: await lerCorpo(req) });
+      const corpo = await lerCorpo(req);
+      resposta = await comContagem(contagem, () => r.fn({ metodo, caminho: url.pathname, params, query: url.searchParams, corpo }));
     } catch (e) {
       console.error(`[api-conta] erro em ${metodo} ${url.pathname}:`, e);
+      registrar(`[api-conta] erro em ${metodo} ${url.pathname}: ${(e as Error).message} (${contagem.consultas} consultas)`);
       resposta = erro(500, "erro interno");
     }
+    if (url.pathname !== "/saude") ultimaRequisicao = { caminho: `${metodo} ${url.pathname}`, consultas: contagem.consultas };
     break;
   }
   res.writeHead(resposta.status, { "Content-Type": "application/json; charset=utf-8" });

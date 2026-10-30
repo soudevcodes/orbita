@@ -24,6 +24,8 @@ Banco tem muita palavra estranha. Aqui está o que elas querem dizer, em portugu
 | **LGPD** | Lei Geral de Proteção de Dados. Define como dado pessoal pode ser usado e guardado. |
 | **Banco Central (BC)** | Quem regula os bancos no Brasil e o Pix. |
 | **SEV1 / SEV2 / SEV3** | Gravidade de um incidente (ver [como trabalhamos](05-como-trabalhamos.md)). |
+| **Consulta N+1** | Buscar uma lista no banco (1 consulta) e depois fazer mais uma consulta para cada item dela (N consultas). Com 10 itens ninguém percebe; com 10 mil, o banco cai. |
+| **Go-live** | O momento em que uma funcionalidade passa a valer para os clientes. Antes dele, o checklist de go-live. |
 | **Postmortem** | Documento escrito depois de um incidente: o que aconteceu, por quê, e o que muda. Sem culpados. |
 | **PR (pull request)** | O pedido para colocar sua mudança no código principal, revisado por outra pessoa. |
 | **Daily** | A atualização diária do time. Aqui ela é escrita. |

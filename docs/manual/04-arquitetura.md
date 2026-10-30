@@ -57,6 +57,18 @@ Em produção o banco é Postgres e cada serviço roda separado. **No seu comput
 
 `POST /compra/avaliar` recebe `{ "cliente_id": 17, "valor_centavos": 45000, "categoria": "eletronicos", "cidade": "Recife", "quando": "2026-10-31T15:00:00Z" }` (`quando` em UTC) e responde `{ "retida": true, "motivos": ["valor_alto_categoria_nova"] }`. Os motivos possíveis são `"valor_alto_categoria_nova"` e `"cidade_distante"` (regras 1 e 2 do [antifraude](03-produto.md#antifraude-primeira-versão)); compra aprovada vem com a lista vazia.
 
+### Conta e Pix da `api-conta`
+
+- `GET /clientes/:id/saldo` → `{ "cliente_id": 17, "saldo_centavos": 1234567 }`.
+- `POST /pix` recebe `{ "cliente_id": 17, "valor_centavos": 15000, "chave_destino": "loja@exemplo.com", "chave_idempotencia": "app-7f3a-001", "quando": "2026-11-09T13:00:00Z" }` e responde o Pix criado: `{ "id": "pix-000001", "status": "enviado", ... }`. Recusa com **422** (`{ "erro": "..." }`) quando passa do limite noturno ou do saldo. `quando` é o instante do pedido em UTC, que o app manda; se faltar, vale o relógio do servidor.
+- O envio passa pelo SPI do Banco Central, que leva um tempo para responder (no seu computador, simulado em ~150 ms). Os Pix enviados ficam em memória: reiniciou a `api-conta`, eles somem.
+
+### Proteção do banco
+
+Em produção, o proxy do banco **derruba a requisição que faz mais de 80 consultas** — melhor uma tela com erro do que o banco inteiro parado. A `api-conta` local faz o mesmo (`api-conta/src/banco.ts`): a 81ª consulta de uma requisição lança um erro, a requisição volta 500 e o motivo vai para o log. `GET /saude` mostra o limite e quantas consultas fez a última requisição (`ultima_requisicao`).
+
+> Ninguém aumenta o limite para "resolver" um incidente: ele existe para proteger todo mundo. Se uma tela passa dele, o problema é a tela.
+
 ### Logs
 
 A `api-conta` escreve os logs no terminal e guarda as últimas 200 linhas em memória. `GET /logs?ultimas=50` devolve `{ "linhas": [...] }` — é o que a ferramenta de monitoramento lê em produção (e o que a auditoria pede para ver). Log é lido por muita gente: vale o [ADR-004](07-decisoes.md#adr-004). Reiniciou a `api-conta`, as linhas antigas somem.

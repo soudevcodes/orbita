@@ -18,8 +18,9 @@ O que o cliente vê no celular (e no `app-web`):
 
 ## Regras do Pix
 
-- **Limite noturno:** das 20h às 6h, cada Pix de saída pode ser de no máximo **R$ 1.000,00**.
-- **Sem cobrança em dobro:** todo pedido de Pix chega com uma `chave_idempotencia`. Se o mesmo pedido chegar de novo (o app reenviou porque a rede caiu), devolvemos o resultado do primeiro e **não** movimentamos dinheiro outra vez ([ADR-002](07-decisoes.md#adr-002)).
+- **Limite noturno:** das 20h às 6h **no horário de São Paulo** ([ADR-003](07-decisoes.md#adr-003)), cada Pix de saída pode ser de no máximo **R$ 1.000,00**. "Das 20h às 6h" = de 20h00 até 5h59; às 6h00 já vale o dia. R$ 1.000,00 exatos à noite pode.
+- **Sem cobrança em dobro:** todo pedido de Pix chega com uma `chave_idempotencia`. Se o mesmo pedido chegar de novo (o app reenviou porque a rede caiu) — **mesmo que o primeiro ainda esteja em andamento** —, devolvemos o resultado do primeiro e **não** movimentamos dinheiro outra vez ([ADR-002](07-decisoes.md#adr-002)). Pedido com outra chave é outro Pix, mesmo com o mesmo valor.
+- **Saldo:** soma das entradas (`pix_entrada`, `estorno`) menos todas as saídas. Pix maior que o saldo é recusado.
 
 ## Regras do Primeiro Cartão
 

@@ -35,6 +35,7 @@ A partir da semana 3 você também vai precisar do **motor de crédito** (Python
 | `motor-credito/` | Regras do Primeiro Cartão (Python) — `npm run motor` |
 | `dados/` | Consultas SQL do Risco — `npx orbita sql <arquivo>` |
 | `revisoes/` | PRs de colegas esperando a sua revisão |
+| `incidentes/` | Incidentes abertos (e, depois, os postmortems) |
 | `ferramentas/` | A CLI `orbita` e o gerador de dados |
 
 ## Como você entrega

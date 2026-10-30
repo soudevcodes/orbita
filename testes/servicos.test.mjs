@@ -44,7 +44,9 @@ const pedir = async (base, metodo, caminho, corpo) => {
 };
 
 test("api-conta e motor-credito respondem /saude", async () => {
-  assert.equal((await pedir(API, "GET", "/saude")).corpo.ok, true);
+  const saude = (await pedir(API, "GET", "/saude")).corpo;
+  assert.equal(saude.ok, true);
+  assert.equal(saude.limite_consultas, 80);
   assert.equal((await pedir(MOTOR, "GET", "/saude")).corpo.ok, true);
 });
 
@@ -57,6 +59,8 @@ test("rotas da temporada existem", async () => {
     ["GET", "/clientes/3/oferta"],
     ["POST", "/compra/avaliar", { cliente_id: 1, valor_centavos: 1000, categoria: "mercado", cidade: "São Paulo", quando: "2026-10-31T15:00:00Z" }],
     ["GET", "/logs?ultimas=5"],
+    ["GET", "/clientes/1/saldo"],
+    ["POST", "/pix", { cliente_id: 1, valor_centavos: 100, chave_destino: "teste", chave_idempotencia: "teste-1", quando: "2026-11-09T13:00:00Z" }],
   ];
   for (const [metodo, caminho, corpo] of rotas) {
     const r = await pedir(API, metodo, caminho, corpo);
