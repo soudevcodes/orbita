@@ -10,11 +10,12 @@ import "./rotas/compras.ts";
 import "./rotas/logs.ts";
 import "./rotas/conta.ts";
 import "./rotas/pix.ts";
+import "./rotas/rotativo.ts";
 
 const PORTA = Number(process.env.PORTA ?? 3333);
 
 rota("GET", "/saude", () =>
-  ok({ ok: true, servico: "api-conta", versao: "temporada-1/semana-5", limite_consultas: LIMITE_CONSULTAS, ultima_requisicao: ultimaRequisicao }),
+  ok({ ok: true, servico: "api-conta", versao: "temporada-1/semana-6", limite_consultas: LIMITE_CONSULTAS, ultima_requisicao: ultimaRequisicao }),
 );
 
 createServer(atender).listen(PORTA, () => {

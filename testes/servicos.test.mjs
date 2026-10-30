@@ -61,6 +61,7 @@ test("rotas da temporada existem", async () => {
     ["GET", "/logs?ultimas=5"],
     ["GET", "/clientes/1/saldo"],
     ["POST", "/pix", { cliente_id: 1, valor_centavos: 100, chave_destino: "teste", chave_idempotencia: "teste-1", quando: "2026-11-09T13:00:00Z" }],
+    ["POST", "/rotativo/simular", { divida_centavos: 100000, dias: 30, em_atraso: false }],
   ];
   for (const [metodo, caminho, corpo] of rotas) {
     const r = await pedir(API, metodo, caminho, corpo);

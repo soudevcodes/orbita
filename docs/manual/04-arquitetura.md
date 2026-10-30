@@ -53,6 +53,11 @@ Em produção o banco é Postgres e cada serviço roda separado. **No seu comput
 - `motivos` lista **todas** as regras de "Quem pode ter" que o cliente não cumpre: `"idade"`, `"conta_recente"`, `"entradas"`. Elegível = lista vazia.
 - `limite_centavos` é o limite inicial quando elegível, e `null` quando não.
 
+### Oferta e rotativo da `api-conta`
+
+- `GET /clientes/:id/oferta` → `{ "cliente_id": 3, "elegivel": true, "limite_centavos": 45000, "entradas_por_mes": {...} }`. Quem não é elegível vem com `"limite_centavos": null` — não existe oferta sem cartão.
+- `POST /rotativo/simular` recebe `{ "divida_centavos": 100000, "dias": 360, "em_atraso": true }` e responde `{ "divida_centavos", "juros_centavos", "multa_centavos", "mora_centavos", "encargos_centavos", "total_centavos" }` ([simulação de encargos](03-produto.md#rotativo-e-atraso)).
+
 ### O antifraude da `api-conta`
 
 `POST /compra/avaliar` recebe `{ "cliente_id": 17, "valor_centavos": 45000, "categoria": "eletronicos", "cidade": "Recife", "quando": "2026-10-31T15:00:00Z" }` (`quando` em UTC) e responde `{ "retida": true, "motivos": ["valor_alto_categoria_nova"] }`. Os motivos possíveis são `"valor_alto_categoria_nova"` e `"cidade_distante"` (regras 1 e 2 do [antifraude](03-produto.md#antifraude-primeira-versão)); compra aprovada vem com a lista vazia.

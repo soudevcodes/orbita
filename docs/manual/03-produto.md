@@ -73,6 +73,14 @@ O cliente precisa, ao mesmo tempo:
 - Pagamento depois do vencimento: **multa de 2%** sobre o valor em atraso + **juros de mora de 1% ao mês**.
 - **Teto legal:** a soma de juros e encargos de uma dívida do cartão nunca pode passar de **100% do valor original** dessa dívida. A Joana vai perguntar sobre isso em todo ticket que mexe com juros.
 
+**Simulação de encargos** (a tela "quanto vou pagar se atrasar", `POST /rotativo/simular`). Na versão do lançamento, juros simples sobre a dívida original, cada valor em centavos arredondado para baixo:
+- juros do rotativo = dívida × 8% × dias ÷ 30;
+- se estiver em atraso: multa = dívida × 2%, e mora = dívida × 1% × dias ÷ 30;
+- **encargos = juros + multa + mora, limitados à dívida** (o teto de 100% vale para a soma, não só para os juros);
+- total = dívida + encargos.
+
+> Dívida de R$ 1.000,00, 360 dias em atraso: juros R$ 960,00 + multa R$ 20,00 + mora R$ 120,00 = R$ 1.100,00 → passa do teto → encargos **R$ 1.000,00**, total **R$ 2.000,00**.
+
 ## Antifraude (primeira versão)
 
 **Compras** do cliente são as transações `debito` e `credito` (as que têm categoria e cidade). Uma compra nova no crédito fica **retida para confirmação no app** quando:
