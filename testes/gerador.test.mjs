@@ -13,7 +13,7 @@ test("sementes diferentes, dados diferentes", () => {
 });
 
 test("impressão digital de referência da semente 42 (contrato com o servidor)", () => {
-  assert.equal(impressaoDigital(gerarDados(42)), "v1-87fd7cff");
+  assert.equal(impressaoDigital(gerarDados(42)), "v2-41125358");
 });
 
 test("personagens são iguais em qualquer semente", () => {

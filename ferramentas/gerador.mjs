@@ -16,7 +16,7 @@ export const INICIO_DADOS = "2026-03-01";
 /** Clientes inventados além dos personagens. */
 export const CLIENTES_ALEATORIOS = 400;
 /** Versão do formato dos dados: mudou o gerador, sobe a versão. */
-export const VERSAO_DADOS = 1;
+export const VERSAO_DADOS = 2;
 
 // --- números pseudoaleatórios reprodutíveis (mulberry32) --------------------
 
@@ -256,7 +256,74 @@ export function gerarDados(semente) {
     }
   }
 
-  return { clientes, transacoes };
+  const { cartoes, compras } = gerarCartoes(semente, clientes);
+  return { clientes, transacoes, cartoes, compras };
+}
+
+// --- cartão de crédito (versão 2 dos dados) --------------------------------
+//
+// Sorteio SEPARADO: não muda as transações da conta, que os tickets da
+// semana 1 conferem.
+
+/** Cartões que já existem no piloto do Primeiro Cartão. */
+const CARTOES_PERSONAGENS = [
+  { cliente_id: 1, dia_fechamento: 10, ativo_desde: "2026-07-01", limite_centavos: 60000 }, // Dona Cida
+  { cliente_id: 2, dia_fechamento: 20, ativo_desde: "2026-08-01", limite_centavos: 55000 }, // Wesley
+  { cliente_id: 3, dia_fechamento: 1, ativo_desde: "2026-08-15", limite_centavos: 45000 }, // Priscila
+];
+
+const LOJAS = [
+  ["Mercado do Bairro", 2000, 30000],
+  ["Farmácia Bem Estar", 1500, 12000],
+  ["Posto Avenida", 5000, 25000],
+  ["Loja de Roupas Estilo", 6000, 40000],
+  ["Eletro Mania", 20000, 150000],
+  ["Padaria Pão Quente", 800, 5000],
+  ["Transporte por app", 1200, 6000],
+  ["Restaurante Sabor", 3000, 15000],
+];
+
+function gerarCartoes(semente, clientes) {
+  const s = criarSorteio((semente ^ 0x5bd1e995) >>> 0);
+  const cartoes = CARTOES_PERSONAGENS.map((c) => ({ ...c }));
+  for (const c of clientes) {
+    if (c.personagem || !s.chance(0.2)) continue;
+    cartoes.push({
+      cliente_id: c.id,
+      dia_fechamento: s.escolha([1, 10, 20]),
+      ativo_desde: `2026-0${s.inteiro(6, 9)}-${String(s.inteiro(1, 28)).padStart(2, "0")}`,
+      limite_centavos: s.inteiro(2, 30) * 5000,
+    });
+  }
+  const compras = [];
+  let proxId = 1;
+  for (const cartao of cartoes) {
+    const meses = mesesEntre(cartao.ativo_desde, DATA_REFERENCIA);
+    const avista = [];
+    for (const mes of meses) {
+      const qtd = s.inteiro(2, 6);
+      for (let i = 0; i < qtd; i++) {
+        const dia = `${mes}-${String(s.inteiro(1, diasNoMes(mes))).padStart(2, "0")}`;
+        if (dia < cartao.ativo_desde || dia > DATA_REFERENCIA) continue;
+        const [loja, min, max] = s.escolha(LOJAS);
+        const valor = s.inteiro(min, max);
+        // parcela só quando cada parcela fica com pelo menos R$ 5,00 (regra do manual)
+        let parcelas = s.chance(0.3) ? s.inteiro(2, 6) : 1;
+        while (parcelas > 1 && Math.floor(valor / parcelas) < 500) parcelas -= 1;
+        const compra = { id: proxId++, cliente_id: cartao.cliente_id, descricao: loja, valor_centavos: valor, parcelas, comprada_em: dia, estornada_em: null };
+        compras.push(compra);
+        if (parcelas === 1) avista.push(compra);
+      }
+    }
+    // Um estorno por cartão, de alguma compra à vista, alguns dias depois.
+    if (avista.length) {
+      const c = s.escolha(avista);
+      const ms = Date.UTC(+c.comprada_em.slice(0, 4), +c.comprada_em.slice(5, 7) - 1, +c.comprada_em.slice(8, 10)) + s.inteiro(2, 12) * DIA_MS;
+      const quando = new Date(ms).toISOString().slice(0, 10);
+      if (quando <= DATA_REFERENCIA) c.estornada_em = quando;
+    }
+  }
+  return { cartoes, compras };
 }
 
 /**
@@ -273,5 +340,7 @@ export function impressaoDigital(dados) {
   };
   for (const c of dados.clientes) mistura(`${c.id}|${c.cpf}|${c.conta_aberta_em};`);
   for (const t of dados.transacoes) mistura(`${t.id}|${t.cliente_id}|${t.valor_centavos}|${t.criada_em};`);
+  for (const c of dados.cartoes ?? []) mistura(`${c.cliente_id}|${c.dia_fechamento}|${c.ativo_desde};`);
+  for (const c of dados.compras ?? []) mistura(`${c.id}|${c.cliente_id}|${c.valor_centavos}|${c.parcelas}|${c.comprada_em}|${c.estornada_em};`);
   return `v${VERSAO_DADOS}-${h.toString(16).padStart(8, "0")}`;
 }

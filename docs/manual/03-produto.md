@@ -41,17 +41,28 @@ O cliente precisa, ao mesmo tempo:
 ### Fatura
 - O cliente escolhe o **dia de fechamento**: 1, 10 ou 20.
 - A fatura **vence 7 dias corridos depois do fechamento**. Se o vencimento cair em sábado, domingo ou feriado nacional, passa para o **próximo dia útil**.
+- O valor da fatura é a soma das compras do período (de um fechamento até o dia anterior ao próximo) e das parcelas que caem nela, menos os estornos.
 - Compra feita **no dia do fechamento ou depois** entra na fatura seguinte ("melhor dia de compra").
-- Estorno de compra vira crédito na **fatura aberta** no momento do estorno.
+- Estorno de compra vira crédito na **fatura aberta** no momento do estorno, pelo valor total da compra. (Só compras à vista podem ser estornadas pelo app.)
+- Compra parcelada: a **1ª parcela cai na fatura da data da compra**; cada parcela seguinte, numa fatura seguinte.
+
+**Feriados nacionais** que o sistema considera:
+
+| 2026 | 2027 |
+|---|---|
+| 01/01, 16/02, 17/02, 03/04, 21/04, 01/05, 04/06, 07/09, 12/10, 02/11, 15/11, 20/11, 25/12 | 01/01, 08/02, 09/02, 26/03, 21/04, 01/05, 27/05, 07/09, 12/10, 02/11, 15/11, 20/11, 25/12 |
 
 ### Parcelamento sem juros
 - De 2 a 6 parcelas.
 - Cada parcela é o valor dividido pelo número de parcelas, em centavos; **os centavos que sobram vão na primeira parcela**.
+- **Parcela mínima de R$ 5,00.** Se dividir deixar alguma parcela menor que isso, o parcelamento é recusado (a compra pode ser feita à vista).
 
 > R$ 100,00 em 3x → 3.334 + 3.333 + 3.333 centavos.
 
 ### Pagamento mínimo
-- **15% do total da fatura**, com piso de **R$ 20,00** — ou o total, se a fatura for menor que R$ 20,00.
+- **15% do total da fatura, arredondado para cima até o centavo**, com piso de **R$ 20,00** — ou o total, se a fatura for menor que R$ 20,00.
+
+> Fatura de R$ 50,00 → 15% = R$ 7,50 → mínimo **R$ 20,00**. Fatura de R$ 12,00 → mínimo **R$ 12,00**. Fatura de R$ 1.000,01 → 15% = R$ 150,0015 → **R$ 150,01**.
 
 ### Rotativo e atraso
 - O que ficar sem pagar depois do vencimento vira **saldo rotativo**, com juros de **8% ao mês**, cobrados por dia (8% ÷ 30 por dia corrido).
