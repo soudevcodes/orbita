@@ -10,7 +10,7 @@ Cada item diz o que conferir e onde está a regra. Rode os comandos, compare com
 |---|---|---|---|
 | 1 | **Serviços no ar** | `curl localhost:3333/saude` e `curl localhost:3334/saude` respondem `"ok": true` | Arquitetura |
 | 2 | **Elegibilidade e limite no motor** | `POST localhost:3334/elegibilidade` com a Dona Cida, a Priscila, o Kaique e a Marta do seu banco (as entradas por mês você tira com `npx orbita sql`) | Produto: "Quem pode ter", "Limite inicial" |
-| 3 | **Oferta no app** | `curl localhost:3333/clientes/3/oferta` (Priscila) e `curl localhost:3333/clientes/5/oferta` (Kaique, 17 anos) | Produto: "Limite inicial"; Arquitetura: "Oferta e rotativo" |
+| 3 | **Oferta no app** | `curl localhost:3333/clientes/3/oferta` (Priscila) e `curl localhost:3333/clientes/5/oferta` (Kaique, 16 anos) | Produto: "Limite inicial"; Arquitetura: "Oferta e rotativo" |
 | 4 | **Fatura e encargos** | vencimento do fechamento de 01/11/2026, mínimo de uma fatura de R$ 50,00, R$ 100,00 em 3x e a simulação de encargos de R$ 1.000,00 com 360 dias de atraso | Produto: "Fatura", "Pagamento mínimo", "Parcelamento", "Rotativo e atraso" |
 | 5 | **Antifraude e logs** | a primeira compra de um cliente de conta nova não é retida; `curl localhost:3333/logs` não mostra CPF inteiro nem nome completo | Produto: "Antifraude"; ADR-004 |
 | 6 | **Pix e saldo** | o mesmo Pix enviado duas vezes ao mesmo tempo sai uma vez só; Pix de R$ 1.200 às 21h é recusado; o saldo de um cliente com muito movimento responde | Produto: "Regras do Pix"; Arquitetura: "Proteção do banco" |

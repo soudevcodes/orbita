@@ -12,7 +12,7 @@
   "scripts": {
     "setup": "node ferramentas/orbita.mjs setup",
     "api": "node --experimental-strip-types --no-warnings api-conta/src/servidor.ts",
-    "motor": "cd motor-credito && python3 -m motor_credito",
+    "motor": "node ferramentas/motor.mjs",
     "test": "node --test --no-warnings testes/*.test.mjs"
   }
 }

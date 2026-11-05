@@ -4,7 +4,7 @@
 //   npx orbita login <código>     conecta este computador à sua conta
 //   npx orbita setup              gera o seu orbita.db (dados só seus)
 //   npx orbita doctor             confere se o ambiente está pronto
-//   npx orbita sql <arquivo.sql>  roda uma consulta no orbita.db
+//   npx orbita sql "SELECT …"     roda uma consulta no orbita.db (ou: npx orbita sql arquivo.sql)
 //   npx orbita ticket <T-001>     mostra um ticket
 //   npx orbita entregar <T-001>   entrega um ticket (respostas: --resposta, --linha, --texto)
 import fs from "node:fs";
@@ -153,11 +153,19 @@ async function doctor() {
 }
 
 async function sql(a) {
-  const arquivo = a._[1];
-  if (!arquivo) return console.error("Use: npx orbita sql dados/minha-consulta.sql");
+  const alvo = a._.slice(1).join(" ").trim();
+  if (!alvo) return console.error('Use: npx orbita sql "SELECT ..."  ou  npx orbita sql dados/minha-consulta.sql');
+  // Um arquivo .sql ou a própria consulta entre aspas (mais fácil para começar).
+  const consulta = /\.sql$/i.test(alvo) ? fs.readFileSync(path.resolve(alvo), "utf8") : alvo;
   const { abrirBanco } = await import("./banco.mjs");
   const db = abrirBanco(BANCO);
-  const linhas = db.prepare(fs.readFileSync(path.resolve(arquivo), "utf8")).all();
+  let linhas;
+  try {
+    linhas = db.prepare(consulta).all();
+  } catch (e) {
+    db.close();
+    return console.error(vermelho(`Erro no SQL: ${e.message}`));
+  }
   db.close();
   if (!linhas.length) return console.log(cinza("(nenhuma linha)"));
   console.table(linhas.slice(0, 50).map((l) => ({ ...l })));
@@ -208,7 +216,7 @@ if (!cmd) {
   npx orbita login <código>     conecta este computador à sua conta
   npx orbita setup              gera o seu orbita.db
   npx orbita doctor             confere o ambiente
-  npx orbita sql <arquivo>      roda uma consulta no orbita.db
+  npx orbita sql "SELECT …"     roda uma consulta no orbita.db (ou um arquivo .sql)
   npx orbita ticket <id>        mostra um ticket
   npx orbita entregar <id>      entrega um ticket (--resposta, --linha, --texto)`);
 } else {
